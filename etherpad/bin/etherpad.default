@@ -6,12 +6,12 @@ ETHERPAD_USER="etherpad"
 ETHERPAD_GROUP="etherpad"
 
 # Setup paths
-ETHERPAD_HOME=/usr/local/etherpad
-JAVA=/usr/bin/java
-JAVA_HOME=/usr/lib/jvm/java-6-openjdk
-SCALA=/usr/bin/scala
-SCALA_HOME=/usr/share/java
-MYSQL_CONNECTOR_JAR=/usr/share/java/mysql-connector-java.jar
+ETHERPAD_HOME=/home/etherpad/pad
+#JAVA=/usr/bin/java
+#JAVA_HOME=/usr/lib/jvm/java-6-openjdk
+#SCALA=/usr/bin/scala
+#SCALA_HOME=/usr/share/java
+#MYSQL_CONNECTOR_JAR=/usr/share/java/mysql-connector-java.jar
 
 # Maximum amount of RAM to allocate
 MXRAM="1G"
