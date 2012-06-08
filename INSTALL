@@ -1,85 +1,83 @@
-INSTALLATION INSTRUCTIONS
+Install Instructions for CentOS
 
-OPTION #1. INSTALLING ON POSIX COMPATIBLE SYSTEMS
+* Install Sun JDK 6
+  1. wget <URL to latest JRE RPM>
+  2. chmod + x jre-*-linux-x64-rpm.bin
+  3. sh jre-*-linux-x64-rpm.bin
+  4. JRE=/usr/java/latest
+  5. /usr/sbin/alternatives  \
+        --install /usr/bin/java                  java          $JRE/bin/java          25000 \
+        --slave /usr/bin/rmiregistry              rmiregistry  $JRE/bin/rmiregistry        \
+        --slave /usr/share/man/man1/java.1        java.1        $JRE/man/man1/java.1        \
+        --slave /usr/share/man/man1/rmiregistry.1 rmiregistry.1 $JRE/man/man1/rmiregistry.1  \
+        --slave /usr/lib/jvm/jre                  jre          $JRE/jre                    \
+        --slave /usr/lib/jvm-exports/jre          jre_exports  $JRE/jre/lib
 
-* Install the dependencies: Scala 2.7, Sun Java JDK 6 or OpenJDK 6, libmysql-java
+* Install Scala 2.7
+  1. wget http://www.scala-lang.org/sites/default/files/linuxsoft_archives/downloads/distrib/files/scala-2.7.7.final.tgz
+  2. tar xzf scala-2.7.7.final.tgz
+  3. mkdir /usr/scala
+  4. mv scala-2.7.7.final /usr/scala/2.7.7
+  5. ln -s /usr/scala/2.7.7 /usr/scala/latest
+
+* Install libmysql-java
+  1. wget http://www.mirrorservice.org/sites/ftp.mysql.com/Downloads/Connector-J/mysql-connector-java-5.1.20.tar.gz
+  2. tar xzf mysql-connector-java-5.1.20.tar.gz
+  3. mv mysql-connector-java-5.1.20 /usr/local/mysql-connector-java
+
+* vim /etc/profile and add to the bottom
+    export JAVA_HOME=/usr/java/latest
+    export JAVA=$JAVA_HOME/bin/java
+    export SCALA_HOME=/usr/scala/latest
+    export SCALA=$SCALA_HOME/bin/scala
+    export SCALA_LIBRARY_JAR=$SCALA_HOME/lib/scala-library.jar
+    export PATH=$JAVA_HOME/bin:$SCALA_HOME/bin:$PATH
+    export MYSQL_CONNECTOR_JAR=/usr/local/mysql-connector-java/mysql-connector-java-5.1.20-bin.jar
 
 * Uninstall gcj if it's installed as it seems to interfere with the
   Scala compiler.  You can safely reinstall it after compiling Etherpad
   if you want to.
 
-* You might want to edit the file bin/exports.sh (and optionally
-  etherpad/bin/etherpad.default) and change the paths to match your system
-  but important paths are already autodetected.
+* Log out and back in to get the new profile
+
+* useradd etherpad
+
+* su etherpad
+
+* cd ~
+
+* git clone <this repo>
+
+* cd pad
 
 * Run bin/build.sh
 
-* Create a new user on your system called "etherpad"
-
 * Create a MySQL database "etherpad" and a database user "etherpad"
+
+* Create an SSL certificate for use on the server
+  1. cd etherpad/data/appjet/
+  2. keytool -genkey -alias appjet -storepass HACKME -keypass HACKME2 -keyalg RSA -keystore sslkeystore -storetype jks
 
 * Copy etherpad/etc/etherpad.localdev-default.properties to etherpad/etc/etherpad.local.properties
 * Edit etherpad/etc/etherpad.local.properties and set
    etherpad.SQL_JDBC_URL
        Example etherpad.SQL_JDBC_URL = jdbc:mysql://localhost:3306/etherpad
-   etherpad.SQL_PASSWORD
+   etherpad.SQL_PASSWORD =
    etherpad.SQL_USERNAME = etherpad
-   etherpad.adminPass
+   etherpad.adminPass =
+   sslKeyPassword =
+   sslStorePassword =
    topdomains
        Example: topdomains = yourhostname.com,localhost
 
-* You can now run etherpad via bin/run.sh 
+* You can now run etherpad via bin/run.sh or
 
-* If you want to have Etherpad run via init, create a link
-  to debian/etherpad.init from /etc/init.d/etherpad and
-  enable via update-rc.d etherpad defaults ; you'll also
-  need to create an etherpad user and group via
-  groupadd etherpad && useradd -G etherpad etherpad 
+* Setup etherpad as a service
+    1. ln -s ~etherpad/pad/redhat/etherpad.init /etc/init.d/etherpad
+    2. chkconfig --add etherpad
+    3. chkconfig etherpad on
+    4. service etherpad start
 
 * You can then start etherpad with run /etc/init.d/etherpad start
 
-OPTION #2: BUILDING THE .DEB PACKAGE
-
-  sudo apt-get install po-debconf debhelper dbconfig-common sun-java6-jdk mysql-client libmysql-java scala scala-library
-
-  debuild -us -uc
-
-As an alternative to debuild you can run
-
-  git-buildpackage -us -uc
-
-if you cloned the git repository (debuild will work also, but git-buildpackage
-does some extra sanity checks). In the end you will have a file called
-etherpad*.deb in the directory one level above your current directory.
-
-* install the .deb package
-
-  cd ..
-  sudo dpkg -i etherpad*.deb
-
-* To run it, do etc/init.d/etherpad start
-
-OPTION #3. INSTALLING ON WINDOWS SYSTEMS WITH CYGWIN
-
-* Install the dependencies in paths that do not contain spaces: cygwin, Scala 2.7, Sun Java JDK 6 or OpenJDK 6, libmysql-java
-
-* Uninstall gcj if it's installed as it seems to interfere with the
-  Scala compiler.  You can safely reinstall it after compiling Etherpad
-  if you want to.
-
-* Run bin/build.sh
-
-* Create a MySQL database "etherpad" and a database user "etherpad"
-
-* Copy etherpad/etc/etherpad.localdev-default.properties to etherpad/etc/etherpad.local.properties
-
-* Edit etherpad/etc/etherpad.local.properties and set
-   etherpad.SQL_JDBC_URL
-       Example etherpad.SQL_JDBC_URL = jdbc:mysql://localhost:3306/etherpad
-   etherpad.SQL_PASSWORD
-   etherpad.SQL_USERNAME = etherpad
-   etherpad.adminPass
-   topdomains
-       Example: topdomains = yourhostname.com,localhost
-
-* You can now run etherpad via bin/run.sh 
+* Admin at https://localhost:9001/ep/admin/
