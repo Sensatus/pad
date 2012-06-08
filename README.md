@@ -1,7 +1,7 @@
 # About Etherpad
-# Etherpad (this version) has been superseded by Etherpad Lite #
-Etherpad Lite is a simplier, faster, lighter solution for collaborative editing.  Please use that and develop on that as it is the active project. <http://github.com/pita/etherpad-lite>
 
 EtherPad is a web-based realtime collaborative document editor.
 
 EtherPad currently lives at <http://etherpad.org>
+
+This fork is specfically setup for CentOS and team based pads, which as of present Etherpad Lite cannot do.
